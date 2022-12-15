@@ -20,6 +20,5 @@ def fill_cartel(
     with SessionContext() as db:
         use_case = use_case_patient.FillQuestionnare(db=db)
         use_case.execute(patient, payload.dict())
-        db.commit()
 
     return StatusOk()
