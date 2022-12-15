@@ -11,7 +11,7 @@ from v1.use_cases import patient as use_case_patient
 router = APIRouter(tags=['Patient'])
 
 
-@router.post("/fill_cartel/", response_model=StatusOk)
+@router.post("/fill_questionnare/", response_model=StatusOk)
 def fill_cartel(
     payload: QuestionnaireWrite,
     patient: Optional[PatientModel] = Depends(patient_auth)
