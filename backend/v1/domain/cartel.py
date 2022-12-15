@@ -14,7 +14,6 @@ class ClinicReadCartelPatient:
 class ClinicReadCartel:
     id: UUID
     date: datetime.datetime
-    summary: str
     symptom: str
     prescription: str
     paint_point: str

@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from sqlalchemy.orm import Query, Session
-
 from v1.domain import Questionnare
 from v1.models import Cartel as CartelModel
 
@@ -19,7 +18,6 @@ class QuestionnareService:
 
         item = CartelModel(
             date=questionnare.date,
-            summary=questionnare.summary,
             symptom=questionnare.symptom,
             paint_point=questionnare.paint_point,
             tempreture=questionnare.tempreture,

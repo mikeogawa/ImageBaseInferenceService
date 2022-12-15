@@ -5,7 +5,6 @@ from dataclasses import dataclass
 @dataclass
 class Questionnare:
     date: datetime.datetime
-    summary: str
     symptom: str
     paint_point: str
     tempreture: float

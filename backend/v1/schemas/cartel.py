@@ -14,7 +14,6 @@ class CartelBase(BaseModel):
 class CartelRead(CartelBase):
     id: UUID
     date: datetime.datetime
-    summary: str
     symptom: str
     paint_point: str
     tempreture: str

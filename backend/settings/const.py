@@ -35,3 +35,8 @@ class JWT:
 class MACHINEAUTH:
     API_HEADER = os.getenv("MACHINEAUTH_API_HEADER", "")  # "Bearer"
     API_KEY = os.getenv("MACHINEAUTH_API_KEY", "")  # "Bearer"
+
+
+class DUMMYDATA:
+    DOCTOR_SUB_ID = os.getenv("DOCTOR_SUB_ID", "")
+    PATIENT_SUB_ID = os.getenv("DOCTOR_SUB_ID", "")

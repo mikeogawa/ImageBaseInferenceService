@@ -4,7 +4,6 @@ from uuid import UUID
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Query, Session
 from starlette.status import HTTP_400_BAD_REQUEST
-
 from v1.domain import (ClinicReadCartel, ClinicReadCartelPatient,
                        ClinicUpdateCartel, Questionnare)
 from v1.models import Cartel as CartelModel
@@ -42,7 +41,6 @@ class ClinicCartelService(CartelService):
         return ClinicReadCartel(
             id=cartel.id,
             date=cartel.date,
-            summary=cartel.summary,
             symptom=cartel.symptom,
             paint_point=cartel.paint_point,
             tempreture=cartel.tempreture,
@@ -98,7 +96,6 @@ class QuestionnareService:
 
         item = CartelModel(
             date=questionnare.date,
-            summary=questionnare.summary,
             symptom=questionnare.symptom,
             paint_point=questionnare.paint_point,
             tempreture=questionnare.tempreture,
