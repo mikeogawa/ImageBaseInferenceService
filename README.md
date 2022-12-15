@@ -2,7 +2,7 @@
 
 docs:
 - [Design](./docs/DESIGN.md): Design Explanation
-- [API Tutorial](./docs/API.md): API Tutorial
+- [API Tutorial](./docs/API_TUTORIAL.md): API Tutorial
 - [ENV File](./docs/ENV.md): ENV File
 
 ## Local Setup
