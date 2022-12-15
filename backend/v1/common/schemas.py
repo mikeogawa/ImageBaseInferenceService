@@ -1,6 +1,6 @@
-from pydantic import Base
+from pydantic import BaseModel
 
 
-class StatusOk(Base):
+class StatusOk(BaseModel):
     status: str = "200"
     detail: str = "OK"

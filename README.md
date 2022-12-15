@@ -8,12 +8,15 @@ docs:
 ## Local
 ```
 dockercompose up
+alembic revision --autogenerate -m "<message>"
+alembic upgrade head
 ```
 
 ## Dummy Data
 ```
 docker exec back-api bash
-python -m "dummy_data.local_data"
+python -m dummy.local_data
+python -m dummy.show_token
 ```
 
 ```

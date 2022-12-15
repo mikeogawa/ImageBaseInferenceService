@@ -6,12 +6,11 @@ import requests
 from fastapi.exceptions import HTTPException
 from fastapi.security.api_key import APIKey
 from fastapi.security.base import SecurityBase
+from settings.const import ENV, JWT
+from settings.db import Base, SessionContext
 from starlette.requests import Request
 from starlette.status import HTTP_403_FORBIDDEN, HTTP_500_INTERNAL_SERVER_ERROR
-
-from settings.const import ENV, JWT
-from settings.db import Base, SessionDB
-from v1.models import Clinic, Patient
+from v1.models import Doctor, Patient
 
 
 def get_public_key(token) -> str:
@@ -48,7 +47,7 @@ def jwt_decode_token(token: str) -> Dict[str, Any]:
             status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Error (123)"
         )
 
-    issuer = 'https://{}/'.format(JWT.END_POINT)
+    issuer = JWT.END_POINT
     return jwt.decode(token, public_key, audience=JWT.AUDIENCE, issuer=issuer, algorithms=JWT.ALGORITHM, options={"verify_signature": True})
 
 
@@ -56,28 +55,30 @@ class CustomAuth(SecurityBase):
     def __init__(
         self,
         base_model: Type[Base],
+        authentication_key: str,
         scheme_name: Optional[str] = None,
         description: Optional[str] = None,
         auto_error: Optional[bool] = True
     ):
-        self.model = APIKey(**{"name": JWT.AUTHENTICATION_KEY, "in": "header", "description": description})
+        self.model = APIKey(**{"name": authentication_key, "in": "header", "description": description})
+        self.authentication_key = authentication_key
         self.scheme_name = scheme_name or self.__class__.__name__
         self.auto_error = auto_error
         self.base_model = base_model
 
-    def get_user_model(self, app_meta: Dict[str, Any]) -> Base:
+    def get_user_model(self, sub_id: str, app_meta: Dict[str, Any]) -> Base:
 
-        sub_id = app_meta.get("sub_id")
-        if sub_id is None:
+        type_user = app_meta.get("type")
+        if type_user is None:
             raise HTTPException(
-                status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Error (222)"
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Error (222): User Type"
             )
 
-        with SessionDB() as db:
-            return db.query(self.base_model).get(self.base_model.sub_id == sub_id)
+        with SessionContext() as db:
+            return db.query(self.base_model).filter(self.base_model.sub_id == sub_id).first()
 
     def __call__(self, request: Request) -> Optional[Base]:
-        authorization: str = request.headers.get(JWT.AUTHENTICATION_KEY)
+        authorization: str = request.headers.get(self.authentication_key)
         auto_error = self.auto_error
         validate_authorization(authorization, auto_error)
 
@@ -85,20 +86,23 @@ class CustomAuth(SecurityBase):
             return None
 
         payload = jwt_decode_token(authorization)
+        sub_id = payload["sub"]
         app_meta = payload["app_meta"]
-        return self.get_user_model(app_meta)
 
+        return self.get_user_model(sub_id, app_meta)
 
-patient_auth = CustomAuth(
-    Patient,
-    "Patient API Key",
-    "Insert Patient Auth Key",
-    True,
-)
 
 clinic_auth = CustomAuth(
-    Clinic,
+    Doctor,
+    JWT.AUTHENTICATION_KEY,
     "Clinic API Key",
     "Insert Clinic Auth Key",
+    True,
+)
+patient_auth = CustomAuth(
+    Patient,
+    JWT.AUTHENTICATION_KEY_2,
+    "Patient API Key",
+    "Insert Patient Auth Key",
     True,
 )

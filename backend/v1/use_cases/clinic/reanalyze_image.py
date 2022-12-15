@@ -2,11 +2,10 @@ from dataclasses import dataclass
 from typing import Any, Dict
 
 from sqlalchemy.orm import Session
-
+from utils import logging
 from v1.models import Doctor as DoctorModel
 from v1.repositories import BaseAnalyzeRepostiory
 from v1.service import ClinicImageService
-from v1.utils import logging
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +21,9 @@ class ReAnalyze:
         image_id = payload["image_id"]
         cartel_id = payload["cartel_id"]
 
-        clinic_service = ClinicImageService(self.db)
+        clinic_service = ClinicImageService(self.db, self.analyze_repostiory)
         clinic_service.validate_cartel(doctor.clinic_id, cartel_id)
         image = clinic_service.get(cartel_id, image_id)
         image.reanalyze()
         clinic_service.set_image_running(cartel_id, image_id)
+        self.db.commit()

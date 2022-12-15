@@ -3,11 +3,10 @@ from typing import Any, Dict, Optional
 from fastapi.exceptions import HTTPException
 from fastapi.security.api_key import APIKey
 from fastapi.security.base import SecurityBase
-from starlette.requests import Request
-from starlette.status import HTTP_403_FORBIDDEN, HTTP_500_INTERNAL_SERVER_ERROR
-
 from settings.const import MACHINEAUTH
 from settings.db import Base, SessionDB
+from starlette.requests import Request
+from starlette.status import HTTP_403_FORBIDDEN, HTTP_500_INTERNAL_SERVER_ERROR
 
 
 class IsMachine:
@@ -49,7 +48,7 @@ class MachineAuth(SecurityBase):
                 status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Error (222)"
             )
 
-        with SessionDB() as db:
+        with SessionContext() as db:
             return db.query(self.base_model).get(self.base_model.sub_id == sub_id)
 
     def __call__(self, request: Request) -> Optional[IsMachine]:

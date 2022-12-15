@@ -2,10 +2,9 @@ from dataclasses import dataclass
 from typing import Any, Dict
 
 from sqlalchemy.orm import Session
-
+from utils import logging
 from v1.repositories import BaseAnalyzeRepostiory
 from v1.service import MachineImageService
-from v1.utils import logging
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +15,7 @@ class UpdateScore:
     analyze_repository: BaseAnalyzeRepostiory
 
     def execute(self, payload: Dict[str, Any]):
-        logger.info("payload", payload)
+        logger.info("payload %s", payload)
         cartel_service = MachineImageService(
             self.db,
             analyze_repoitory=self.analyze_repository,

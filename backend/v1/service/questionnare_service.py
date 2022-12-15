@@ -26,8 +26,8 @@ class QuestionnareService:
             prior_prescription=questionnare.prior_prescription,
             allergy=questionnare.allergy,
             prior_issues=questionnare.prior_issues,
-            patient_id=patient_id,
+            patient_id=str(patient_id),
+            clinic_id=str(questionnare.clinic_id),
         )
-        self.query.add(item)
-        self.query.commit()
-        self.query.flush()
+        self.db.add(item)
+        self.db.flush()

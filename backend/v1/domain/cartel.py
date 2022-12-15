@@ -4,28 +4,30 @@ from typing import Optional
 from uuid import UUID
 
 
+@dataclass
 class ClinicReadCartelPatient:
-    id: UUID
-    firt_name: UUID
-    last_name: UUID
+    id: str
+    first_name: str
+    last_name: str
 
 
 @dataclass
 class ClinicReadCartel:
-    id: UUID
+    id: str
     date: datetime.datetime
     symptom: str
     prescription: str
     paint_point: str
     tempreture: float
-    pain_start: datetime.datetime
-    pain_end: datetime.datetime
+    pain_start: Optional[datetime.datetime]
+    pain_end: Optional[datetime.datetime]
     prior_prescription: str
     allergy: str
     prior_issues: str
     diagnosis: str
     prescription: str
-    user: ClinicReadCartelPatient
+    patient: ClinicReadCartelPatient
+    patient_id: str
     doctor_id: Optional[UUID] = None
     images: Optional[list[UUID]] = None
 

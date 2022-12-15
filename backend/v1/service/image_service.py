@@ -6,7 +6,6 @@ from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Query, Session
 from starlette.status import HTTP_400_BAD_REQUEST
 from utils.dict2obj import Dict2Obj
-
 from v1.domain import ClinicImage, MachineImage
 from v1.models import Cartel as CartelModel
 from v1.models import Clinic as ClinicModel
@@ -38,26 +37,26 @@ class ImageService:
 
 @dataclass
 class ClinicImageService(ImageService):
-    analyze_repoitory: BaseAnalyzeRepostiory
+    analyze_repoitory: Optional[BaseAnalyzeRepostiory] = None
 
     def list(self, cartel_id: UUID) -> list[ClinicImage]:
-        image_list = self.query.filter_by(cartel_id=cartel_id).all()
+        image_list = self.query.filter_by(cartel_id=str(cartel_id)).all()
         res = []
         for image in image_list:
             res.append(
                 ClinicImage(
-                    id=image.id,
+                    id=str(image.id),
                     s3_url=image.s3_url,
                     score=image.score,
-                    cartel_id=image.cartel_id,
-                    user_id=image.user_id,
+                    is_analyzing=image.is_analyzing,
+                    cartel_id=str(image.cartel_id),
                     analyze_repoitory=self.analyze_repoitory,
                 )
             )
         return res
 
-    def get(self, cartel_id: str, id_: str) -> ClinicImage:
-        image = self.query.filter_by(cartel_id=cartel_id, id=id_).first()
+    def get(self, cartel_id: UUID, id_: UUID) -> ClinicImage:
+        image = self.query.filter_by(cartel_id=str(cartel_id), id=str(id_)).first()
         if not image:
             raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Image Not Found")
 
@@ -65,53 +64,46 @@ class ClinicImageService(ImageService):
             id=image.id,
             s3_url=image.s3_url,
             score=image.score,
-            cartel_id=image.cartel_id,
-            user_id=image.user_id,
+            is_analyzing=image.is_analyzing,
+            cartel_id=str(image.cartel_id),
             analyze_repoitory=self.analyze_repoitory,
         )
 
-    def set_image_running(self, cartel_id: str, id_: str):
-        image = self.query.filter_by(cartel_id=cartel_id, id=id_).first()
+    def set_image_running(self, cartel_id: UUID, id_: UUID):
+        image = self.query.filter_by(cartel_id=str(cartel_id), id=str(id_)).first()
         if not image:
             raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Image Not Found")
         image.is_analyzing = True
-        self.query.commit()
-        self.query.flush()
 
 
 @dataclass
 class MachineImageService(ImageService):
-    patient_repostiory: Optional[BasePatientRepository] = None
+    patient_repository: Optional[BasePatientRepository] = None
     analyze_repoitory: Optional[BaseAnalyzeRepostiory] = None
 
     def make_entity(self, payload: Dict[str, Any]) -> MachineImage:
         image: MachineImage = Dict2Obj(payload).convert_to(
             MachineImage,
-            patient_repostiory=self.patient_repostiory,
+            patient_repository=self.patient_repository,
         )
         return image
 
     def create(self, image: MachineImage) -> ImageModel:
         item = ImageModel(
-            cartel_id=image.cartel_id,
-            user_id=image.user_id,
-            patient_repostiory=self.patient_repostiory,
-            analyze_repoitory=self.analyze_repoitory,
+            cartel_id=str(image.cartel_id),
         )
-        self.query.add(item)
-        self.query.commit()
-        self.query.flush()
+        self.db.add(item)
+        self.db.flush()
+        self.db.refresh(item)
         return item
 
     def update_s3_url(self, image_model: ImageModel, image: MachineImage):
         image_model.s3_url = image.s3_url
-        self.query.add(image_model)
-        self.query.commit()
-        self.query.flush()
+        self.db.add(image_model)
+        self.db.flush()
 
     def update_score(self, id_: UUID, score: float):
         image = self.query.filter_by(id=id_).first()
         image.score = score
         image.is_analyzing = False
-        self.query.commit()
-        self.query.flush()
+        self.db.flush()

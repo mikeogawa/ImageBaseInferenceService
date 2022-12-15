@@ -25,6 +25,7 @@ class S3:
 
 class JWT:
     AUTHENTICATION_KEY = os.getenv("AUTHENTICATION_KEY", "")  # "Bearer"
+    AUTHENTICATION_KEY_2 = os.getenv("AUTHENTICATION_KEY_2", "")  # "Bearer"
     AUDIENCE = os.getenv("AUDIENCE", "")  # https://some-medical-clinic.auth0.com/api/v2/
     END_POINT = os.getenv("END_POINT", "")  # https://some-medical-clinic.auth0.com/
     ALGORITHM = os.getenv("ALGORITHM", "")  # HRS256"

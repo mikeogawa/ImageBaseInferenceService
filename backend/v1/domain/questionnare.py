@@ -13,3 +13,4 @@ class Questionnare:
     prior_prescription: str
     allergy: str
     prior_issues: str
+    clinic_id: str

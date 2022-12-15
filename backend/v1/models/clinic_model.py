@@ -1,5 +1,5 @@
 import sqlalchemy as sq
-from common.base_model import BaseModel
+from v1.common.base_model import BaseModel
 
 
 class Clinic(BaseModel):

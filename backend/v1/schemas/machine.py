@@ -1,8 +1,10 @@
+from uuid import UUID
+
 from pydantic import BaseModel
 
 
 class MachineBase(BaseModel):
-    id: str
+    id: UUID
     score: float
 
 

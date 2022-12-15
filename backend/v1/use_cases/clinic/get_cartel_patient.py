@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from typing import UUID
+from uuid import UUID
 
 from sqlalchemy.orm import Session
-
+from utils import logging
 from v1.models import Doctor as DoctorModel
 from v1.service import ClinicPatientService
-from v1.utils import logging
 
 logger = logging.getLogger(__name__)
 

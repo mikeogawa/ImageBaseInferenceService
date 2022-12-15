@@ -10,5 +10,7 @@ class Dict2Obj:
 
     def convert_to(self, domain_class, **additional) -> Any:
         names = [f.name for f in fields(domain_class)]
+        default_value = {f.name: f.default for f in fields(domain_class)}
+        init_dict = {**{n: getattr(self, n, default_value[n]) for n in names}, **additional}
 
-        return domain_class(**{getattr(self, n) for n in names}, **additional)
+        return domain_class(**init_dict)

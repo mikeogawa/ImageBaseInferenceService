@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
-
+from utils import logging
 from v1.models import Doctor as DoctorModel
 from v1.service import ClinicCartelService
-from v1.utils import logging
 
 logger = logging.getLogger(__name__)
 

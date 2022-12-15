@@ -12,6 +12,7 @@ def make_user(sub, type_):
         'sub': sub,
         "app_meta": {"type": type_},
     }
+    print("--->", JWT.ALGORITHM)
     return jwt.encode(payload, key, algorithm=JWT.ALGORITHM)
 
 
@@ -19,8 +20,8 @@ def main():
     doctor_token = make_user(DUMMYDATA.DOCTOR_SUB_ID, "doctor")
     patient_token = make_user(DUMMYDATA.PATIENT_SUB_ID, "patient")
     machine_key = MACHINEAUTH.API_KEY
-    print("doctor:", doctor_token)
     print("patient:", patient_token)
+    print("doctor:", doctor_token)
     print("machine:", machine_key)
 
 

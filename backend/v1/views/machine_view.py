@@ -1,27 +1,28 @@
-from typing import UUID, Optional
+from typing import Optional
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, UploadFile
-
-from settings.db import SessionDB
-from v1.common import IsMachine, StatusOk, machine_auth
-from v1.repositories import LocalAnalyzeRepository, LocalPatientRepository
+from settings.db import SessionContext
+from v1.auth import IsMachine, machine_auth
+from v1.common import StatusOk
+from v1.repositories import (BaseAnalyzeRepostiory, BasePatientRepository,
+                             LocalAnalyzeRepository, LocalPatientRepository)
 from v1.schemas import MachineWrite
 from v1.use_cases import machine as use_case_machine
 
-router = APIRouter()
+router = APIRouter(tags=['Machine'])
 
 
 @router.post("/upload_image/", response_model=StatusOk)
 def upload_image(
     cartel_id: UUID = Form(...),
-    user_id: UUID = Form(...),
-    file: bytes = File(...),
-    patient_repository: LocalPatientRepository = Depends(),
-    machine: Optional[IsMachine] = Depends(machine_auth),
+    file: UploadFile = File(...),
+    patient_repository: BasePatientRepository = Depends(lambda: LocalPatientRepository()),
+    machine: Optional[IsMachine] = Depends(machine_auth),  # noqa
 ):
-    payload = {"cartel_id": cartel_id, "user_id": user_id}
+    payload = {"cartel_id": cartel_id}
 
-    with SessionDB() as db:
+    with SessionContext() as db:
         use_case = use_case_machine.RegiserImage(db, patient_repository)
         use_case.execute(payload, file)
 
@@ -31,13 +32,12 @@ def upload_image(
 @router.post("/update_score/", response_model=StatusOk)
 def update_score(
     payload: MachineWrite,
-    file: UploadFile = File(),
-    analyze_repository: LocalAnalyzeRepository = Depends(),
+    analyze_repository: BaseAnalyzeRepostiory = Depends(lambda: LocalAnalyzeRepository()),
     machine: Optional[IsMachine] = Depends(machine_auth),
 ):
 
-    with SessionDB() as db:
+    with SessionContext() as db:
         use_case = use_case_machine.UpdateScore(db, analyze_repository)
         use_case.execute(payload.dict())
 
-    return StatusOk
+    return StatusOk()

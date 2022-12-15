@@ -1,23 +1,10 @@
-FROM python:3.7
-
-ENV PYTHONUNBUFFERED 1
-
-ARG ENV=local
-
-ARG APP_TIMEOUT
+FROM python:3.9
 
 WORKDIR /backend
-COPY . /backend
+
+COPY requirements.txt .
 
 RUN pip install -r requirements.txt --no-cache-dir && \
-    sed -i -e 's/{% load staticfiles %}/{% load static %}/' /usr/local/lib/python3.7/site-packages/rest_framework_swagger/templates/rest_framework_swagger/index.html && \
-    apt update && \
-    apt install -y cron
+    apt update
 
-COPY ./openapi.py /usr/local/lib/python3.7/site-packages/rest_framework/schemas
-
-COPY ./alphaorder_batch /etc/cron.d/alphaorder_batch
-
-RUN chmod +x ./alphaorder_init.sh ./alphaorder_batch.sh ./sleep.py
-
-CMD sh ./alphaorder_init.sh && python ./sleep.py && python manage.py runserver 0.0.0.0:8000
+CMD ["uvicorn", "app:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,21 +1,20 @@
 from dataclasses import dataclass
 
-import request
-
+import requests
 from settings.const import ANALYZE, ENV
 
-from .base_analyze_repository import BasePatientRepository
+from .base_analyze_repository import BaseAnalyzeRepostiory
 
 
 @dataclass
-class LocalAnalyzeRepository(BasePatientRepository):
+class LocalAnalyzeRepository(BaseAnalyzeRepostiory):
     analyze_url: str = ANALYZE.URL
     analyze_auth: str = ANALYZE.AUTH
 
     def run(self, user_id: str, image_id: str):
         if ENV == "local":
             return
-        request.post(
+        requests.post(
             self.analyze_url,
             json={
                 "user_id": user_id,
