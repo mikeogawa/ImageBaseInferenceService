@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class FillCartel:
+class FillQuestionnare:
     db: Session
 
     def execute(self, patient: PatientModel, payload: Dict[str, Any]):
