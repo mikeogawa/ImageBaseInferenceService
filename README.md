@@ -1,9 +1,9 @@
 # Image Base Inference Service
 
 docs:
-- [Design](./docs/DESIGN.md)
-- [API Tutorial](./docs/API.md)
-- [ENV File](./docs/ENV.md)
+- [Design](./docs/DESIGN.md): Design Explanation
+- [API Tutorial](./docs/API.md): API Tutorial
+- [ENV File](./docs/ENV.md): ENV File
 
 ## Local Setup
 Create `.env` file on this repository.  
@@ -23,7 +23,8 @@ python -m dummy.show_token
 
 ## Swagger
 http://localhost:8000/docs/
-Token は以下の通り
+
+To get the tokens, use the following:
 ```
 docker exec back-api bash
 python -m dummy_data.show_token
